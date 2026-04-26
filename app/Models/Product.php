@@ -2,23 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
+    protected $fillable = ['category_id', 'sku', 'name', 'slug', 'description', 'features', 'image_path', 'gallery', 'technical_specs'];
 
-    protected $fillable = [
-        'category_id',
-        'name',
-        'slug',
-        'sku',
-        'description',
-        'technical_specs',
-        'price',
-        'image',
-        'is_active',
+    protected $casts = [
+        'gallery' => 'array',
     ];
 
     public function category()
@@ -28,12 +19,13 @@ class Product extends Model
 
     public function specifications()
     {
-        return $this->hasMany(ProductSpecification.php);
+        return $this->hasMany(ProductSpecification::class);
     }
 
     public function motorcycles()
     {
-        return $this->belongsToMany(MotorcycleModel::class, 'product_motorcycle', 'product_id', 'motorcycle_model_id')
-                    ->withPivot('part_number');
+        return $this->belongsToMany(MotorcycleModel::class, 'product_motorcycle', 'product_id', 'motorcycle_id')
+            ->withPivot(['diameter', 'color', 'part_number'])
+            ->withTimestamps();
     }
 }
