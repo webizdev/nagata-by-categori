@@ -31,3 +31,11 @@ implementation_plan.md
 task.md
 walkthrough.md
 /prod_build
+database.sql
+cek_kolom.php
+migrate.php
+/tests
+/test
+.config/
+.composer/
+.npm/
