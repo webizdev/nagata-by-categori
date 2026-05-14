@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\SocialMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class SettingController extends Controller
 {
@@ -47,6 +48,8 @@ class SettingController extends Controller
             WebsiteSetting::set($key, $value);
         }
 
+        Cache::forget('web_settings');
+
         return back()->with('success', 'Identitas website berhasil diperbarui.');
     }
 
@@ -58,6 +61,7 @@ class SettingController extends Controller
         }
 
         WebsiteSetting::set('site_logo', null);
+        Cache::forget('web_settings');
 
         return back()->with('success', 'Logo website berhasil dihapus.');
     }
@@ -73,6 +77,7 @@ class SettingController extends Controller
         ]);
 
         Branch::create($data);
+        Cache::forget('web_branches');
         return back()->with('success', 'Cabang baru berhasil ditambahkan.');
     }
 
@@ -86,12 +91,14 @@ class SettingController extends Controller
         ]);
 
         $branch->update($data);
+        Cache::forget('web_branches');
         return back()->with('success', 'Data cabang berhasil diperbarui.');
     }
 
     public function destroyBranch(Branch $branch)
     {
         $branch->delete();
+        Cache::forget('web_branches');
         return back()->with('success', 'Cabang berhasil dihapus.');
     }
 
@@ -104,6 +111,7 @@ class SettingController extends Controller
         ]);
 
         SocialMedia::create($data);
+        Cache::forget('web_socials');
         return back()->with('success', 'Media sosial berhasil ditambahkan.');
     }
 
@@ -115,12 +123,14 @@ class SettingController extends Controller
         ]);
 
         $social->update($data);
+        Cache::forget('web_socials');
         return back()->with('success', 'Media sosial berhasil diperbarui.');
     }
 
     public function destroySocial(SocialMedia $social)
     {
         $social->delete();
+        Cache::forget('web_socials');
         return back()->with('success', 'Media sosial berhasil dihapus.');
     }
 }

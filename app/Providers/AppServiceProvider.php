@@ -28,9 +28,9 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        // Share website settings, social media, branches, and web content with layout views only
-        // This prevents the code from running on every single view partial (performance optimization)
-        View::composer(['layouts.*', 'dashboard', 'auth.*'], function ($view) {
+        // Share website settings, social media, branches, and web content with all views
+        // Caching ensures this is still fast even with the wildcard '*'
+        View::composer('*', function ($view) {
             $cacheTime = 60 * 60; // 1 hour
 
             $settings = \Illuminate\Support\Facades\Cache::remember('web_settings', $cacheTime, function () {

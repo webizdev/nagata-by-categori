@@ -7,6 +7,7 @@ use App\Models\WebContent;
 use App\Services\ImageOptimizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class WebContentController extends Controller
 {
@@ -50,6 +51,7 @@ class WebContentController extends Controller
             }
         }
 
+        Cache::forget('web_contents');
         return redirect()->back()->with('success', 'Konten berhasil diperbarui!');
     }
 }
