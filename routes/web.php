@@ -56,6 +56,27 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
             return "Error: " . $e->getMessage();
         }
     })->name('system.storage-link');
+
+    Route::get('/system/optimize', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('config:cache');
+            \Illuminate\Support\Facades\Artisan::call('route:cache');
+            \Illuminate\Support\Facades\Artisan::call('view:cache');
+            return "System optimized successfully (Config, Route, and View cached)!";
+        } catch (\Exception $e) {
+            return "Error: " . $e->getMessage();
+        }
+    })->name('system.optimize');
+
+    Route::get('/system/clear-cache', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+            \Illuminate\Support\Facades\Cache::flush();
+            return "All caches cleared successfully!";
+        } catch (\Exception $e) {
+            return "Error: " . $e->getMessage();
+        }
+    })->name('system.clear-cache');
 });
 
 // Profile Routes (from Breeze)

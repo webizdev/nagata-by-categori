@@ -28,19 +28,31 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        // Share website settings, social media, branches, and web content with all views
-        View::composer('*', function ($view) {
-            $settings = WebsiteSetting::all()->pluck('value', 'key');
-            $socials = SocialMedia::all();
-            $branches = Branch::all();
+        // Share website settings, social media, branches, and web content with layout views only
+        // This prevents the code from running on every single view partial (performance optimization)
+        View::composer(['layouts.*', 'dashboard', 'auth.*'], function ($view) {
+            $cacheTime = 60 * 60; // 1 hour
+
+            $settings = \Illuminate\Support\Facades\Cache::remember('web_settings', $cacheTime, function () {
+                return WebsiteSetting::all()->pluck('value', 'key');
+            });
+
+            $socials = \Illuminate\Support\Facades\Cache::remember('web_socials', $cacheTime, function () {
+                return SocialMedia::all();
+            });
+
+            $branches = \Illuminate\Support\Facades\Cache::remember('web_branches', $cacheTime, function () {
+                return Branch::all();
+            });
             
-            // Get all web content as a collection for easy access
-            $webContents = \App\Models\WebContent::all()->mapWithKeys(function($item) {
-                $val = $item->value;
-                if ($item->type === 'image' && $val && !str_starts_with($val, 'http')) {
-                    $val = asset('storage/' . $val);
-                }
-                return [$item->slug => $val];
+            $webContents = \Illuminate\Support\Facades\Cache::remember('web_contents', $cacheTime, function () {
+                return \App\Models\WebContent::all()->mapWithKeys(function($item) {
+                    $val = $item->value;
+                    if ($item->type === 'image' && $val && !str_starts_with($val, 'http')) {
+                        $val = asset('storage/' . $val);
+                    }
+                    return [$item->slug => $val];
+                });
             });
             
             $view->with([
